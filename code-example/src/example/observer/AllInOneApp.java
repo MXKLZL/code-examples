@@ -21,10 +21,11 @@ public class AllInOneApp extends JFrame implements ActionListener, KeyListener {
 	private AllInOneAppServer searchServer;
 	private AllInOneAppServer suggServer;
 
-	public AllInOneApp() {
+	public AllInOneApp(AllInOneAppServer server1, AllInOneAppServer server2) {
 		textInput = createTextField();
 		searchButton = createSearchButton();
-
+		setSearchServer(server1);
+		setSuggServer(server2);
 		container = new JPanel();
 		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
 		container.add(textInput);
@@ -34,11 +35,11 @@ public class AllInOneApp extends JFrame implements ActionListener, KeyListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public void setSearchServer(AllInOneAppServer server) {
+	private void setSearchServer(AllInOneAppServer server) {
 		searchServer = server;
 	}
 	
-	public void setSuggServer(AllInOneAppServer server) {
+	private void setSuggServer(AllInOneAppServer server) {
 		suggServer = server;
 	}
 
@@ -55,11 +56,10 @@ public class AllInOneApp extends JFrame implements ActionListener, KeyListener {
 		return btn;
 	}
 
-
-
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.searchButton){
 			System.out.println("Need to perform a search (Query: " + this.textInput.getText() + ")");
+			searchServer.updateServer(this.textInput.getText());
 		} else {
 			System.out.println("DEBUG: Ignoring event " + e);
 		}
@@ -77,6 +77,7 @@ public class AllInOneApp extends JFrame implements ActionListener, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		if (e.getSource() == this.textInput){
 			System.out.println("Need to offer auto-complete suggestions (Query: " + this.textInput.getText() + ")");
+			suggServer.updateServer(this.textInput.getText());
 		} else {
 			System.out.println("DEBUG: Ignoring event " + e);
 		}
@@ -87,7 +88,9 @@ public class AllInOneApp extends JFrame implements ActionListener, KeyListener {
 
 
 	public static void main(String[] args) {
-		AllInOneApp app = new AllInOneApp();
+		AllInOneAppServer search = new AllInOneSearchServer();
+		AllInOneAppServer sugg = new AllInOneSuggServer();
+		AllInOneApp app = new AllInOneApp(search, sugg);
 
 		//Display the window.
 		app.pack();
